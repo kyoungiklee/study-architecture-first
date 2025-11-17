@@ -1,0 +1,53 @@
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.7'      // 3.5.x 중 하나 선택
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+compileJava{
+    sourceCompatibility = 21
+    targetCompatibility = 21
+}
+
+
+group = 'org.opennuri.study.architecture'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // --- Spring Boot starters ---
+    implementation 'org.springframework.boot:spring-boot-starter-web'          // Web (Spring MVC, Jackson 등)
+    implementation 'org.springframework.boot:spring-boot-starter-validation'   // Bean Validation (Jakarta Validation)
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'     // Actuator (헬스체크, 메트릭)
+
+    // JPA + DB
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2'    // 개발용 in-memory DB (실서비스는 다른 DB 드라이버 사용)
+
+    // --- springdoc (OpenAPI/Swagger UI) ---
+    // Spring Boot 3.x + Spring MVC 용
+    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+
+    // 취약점 패치용 강제 업그레이드
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
+
+    // --- ArchUnit (아키텍처 룰 테스트) ---
+    testImplementation 'com.tngtech.archunit:archunit-junit5:1.3.0'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
