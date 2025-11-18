@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @WebAdapter
 @RestController
 @RequiredArgsConstructor
-public class MembershipContoller {
+public class MembershipController {
 
     private final RegisterMembershipUseCase registerMembershipUseCase;
     private final UpdateMembershipUseCase updateMembershipUseCase;

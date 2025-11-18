@@ -40,7 +40,7 @@ class MembershipContollerTest {
         searchMembershipUseCase = Mockito.mock(SearchMembershipUseCase.class);
         deleteMembershipUseCase = Mockito.mock(DeleteMembershipUseCase.class);
 
-        MembershipContoller controller = new MembershipContoller(
+        MembershipController controller = new MembershipController(
                 registerMembershipUseCase,
                 updateMembershipUseCase,
                 getMembershipByIdUseCase,
