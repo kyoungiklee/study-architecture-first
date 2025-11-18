@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static org.opennuri.study.architecture.membership.adapter.out.persistance.QMembershipJpaEntity.membershipJpaEntity;
+import static org.opennuri.study.architecture.membership.adapter.out.persistance.QMembershipEntity.membershipEntity;
 
 /**
  * QueryDSL 기반 커스텀 구현 클래스. 네이밍 규칙: [RepositoryInterface]Impl
@@ -18,31 +18,31 @@ public class MembershipRepositoryImpl implements MembershipRepositoryCustom {
     private final EntityManager entityManager;
 
     @Override
-    public List<MembershipJpaEntity> searchUsingQuerydsl(String name,
-                                                         String email,
-                                                         String address,
-                                                         Boolean isCorp,
-                                                         Boolean isValid) {
+    public List<MembershipEntity> searchUsingQuerydsl(String name,
+                                                      String email,
+                                                      String address,
+                                                      Boolean isCorp,
+                                                      Boolean isValid) {
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
 
         BooleanBuilder where = new BooleanBuilder();
         if (name != null && !name.isEmpty()) {
-            where.and(membershipJpaEntity.name.containsIgnoreCase(name));
+            where.and(membershipEntity.name.containsIgnoreCase(name));
         }
         if (email != null && !email.isEmpty()) {
-            where.and(membershipJpaEntity.email.containsIgnoreCase(email));
+            where.and(membershipEntity.email.containsIgnoreCase(email));
         }
         if (address != null && !address.isEmpty()) {
-            where.and(membershipJpaEntity.address.containsIgnoreCase(address));
+            where.and(membershipEntity.address.containsIgnoreCase(address));
         }
         if (isCorp != null) {
-            where.and(membershipJpaEntity.isCorp.eq(isCorp));
+            where.and(membershipEntity.isCorp.eq(isCorp));
         }
         if (isValid != null) {
-            where.and(membershipJpaEntity.isValid.eq(isValid));
+            where.and(membershipEntity.isValid.eq(isValid));
         }
 
-        return query.selectFrom(membershipJpaEntity)
+        return query.selectFrom(membershipEntity)
                 .where(where)
                 .fetch();
     }

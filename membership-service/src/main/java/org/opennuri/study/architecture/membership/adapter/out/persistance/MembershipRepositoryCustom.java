@@ -13,9 +13,9 @@ public interface MembershipRepositoryCustom {
      * - 불리언(isCorp/isValid): 정확 일치
      * - null 파라미터는 필터에서 제외
      */
-    List<MembershipJpaEntity> searchUsingQuerydsl(String name,
-                                                  String email,
-                                                  String address,
-                                                  Boolean isCorp,
-                                                  Boolean isValid);
+    List<MembershipEntity> searchUsingQuerydsl(String name,
+                                               String email,
+                                               String address,
+                                               Boolean isCorp,
+                                               Boolean isValid);
 }

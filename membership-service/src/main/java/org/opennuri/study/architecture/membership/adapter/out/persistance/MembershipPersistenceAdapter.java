@@ -19,7 +19,7 @@ public class MembershipPersistenceAdapter implements CommandMembershipPort, Quer
 
     @Override
     public Membership crateMembership(Membership membership) {
-        MembershipJpaEntity entity = MembershipJpaEntity.builder()
+        MembershipEntity entity = MembershipEntity.builder()
                 .name(membership.getName())
                 .email(membership.getEmail())
                 .address(membership.getAddress())
@@ -28,7 +28,7 @@ public class MembershipPersistenceAdapter implements CommandMembershipPort, Quer
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        MembershipJpaEntity saved = membershipRepository.save(entity);
+        MembershipEntity saved = membershipRepository.save(entity);
 
         return Membership.builder()
                 .membershipId(String.valueOf(saved.getMembershipId()))
@@ -44,8 +44,8 @@ public class MembershipPersistenceAdapter implements CommandMembershipPort, Quer
     public Membership updateMembership(Membership membership) {
         // membershipId 는 문자열이므로 Long 으로 변환
         Long id = Long.parseLong(membership.getMembershipId());
-        Optional<MembershipJpaEntity> optional = membershipRepository.findById(id);
-        MembershipJpaEntity entity = optional.orElseThrow(() -> new IllegalArgumentException("Membership not found: " + id));
+        Optional<MembershipEntity> optional = membershipRepository.findById(id);
+        MembershipEntity entity = optional.orElseThrow(() -> new IllegalArgumentException("Membership not found: " + id));
 
         // 필드 업데이트 (createdAt은 생성 시각으로 유지)
         entity.setName(membership.getName());
@@ -54,7 +54,7 @@ public class MembershipPersistenceAdapter implements CommandMembershipPort, Quer
         entity.setCorp(membership.isCorp());
         entity.setValid(membership.isValid());
 
-        MembershipJpaEntity updated = membershipRepository.save(entity);
+        MembershipEntity updated = membershipRepository.save(entity);
 
         return Membership.builder()
                 .membershipId(String.valueOf(updated.getMembershipId()))
