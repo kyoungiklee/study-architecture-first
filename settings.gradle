@@ -1,2 +1,3 @@
 rootProject.name = 'study-architecture-first'
 include 'membership-service'
+include 'common'
