@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "membership")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class MembershipEntity {

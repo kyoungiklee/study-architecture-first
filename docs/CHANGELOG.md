@@ -35,6 +35,20 @@
 - MembershipRepository에 Example 기반 searchByExample(…) 메서드 추가(간단 검색용)
 - 멀티모듈 빌드/테스트 전반 정상 동작 확인
 
+6) 애플리케이션 기본 설정 추가
+- membership-service/src/main/resources/application.yml 신규 추가
+  - server.port: 8091
+  - H2 인메모리 DB 기본 구성 및 H2 Console 활성화(/h2-console)
+  - JPA 설정: open-in-view=false, hibernate.ddl-auto=update, show-sql=true, SQL 초기화(always)
+  - 로깅: org.hibernate.SQL=debug, org.hibernate.orm.jdbc.bind=trace로 바인딩 값 로깅
+
+7) Membership 엔티티 스키마 정리
+- MembershipEntity에 제약 및 매핑 명시 강화
+  - @GeneratedValue(strategy = IDENTITY)로 PK 전략 고정
+  - email에 unique 제약 추가(@Column(unique = true))
+  - name/email/address/isValid/isCorp/createdAt 모두 not null 명시
+  - 생성 시점 기록용 createdAt 필드 유지(필수 값)
+
 
 변경내용 요약 (2025-11-18)
 
