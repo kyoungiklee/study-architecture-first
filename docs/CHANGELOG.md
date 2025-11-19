@@ -1,3 +1,41 @@
+변경내용 요약 (2025-11-19)
+
+이번 릴리스에서는 검색 전략을 QueryDSL로 표준화하고, 서비스 레이어 단위 테스트를 보강했으며, 공통 모듈의 빌드 실패 원인을 제거했습니다. 주요 변경은 다음과 같습니다.
+
+1) QueryDSL 도입 및 표준화
+- membership-service/build.gradle에 QueryDSL(Jakarta) 추가
+  - com.querydsl:querydsl-jpa:5.1.0:jakarta
+  - com.querydsl:querydsl-apt:5.1.0:jakarta
+  - annotationProcessor: jakarta.annotation-api, jakarta.persistence-api
+- Repository 커스텀 경로 추가
+  - MembershipRepositoryCustom, MembershipRepositoryImpl 추가
+  - 문자열(name/email/address)은 containsIgnoreCase, 불리언(isCorp/isValid)은 정확 일치, null 파라미터는 필터 제외
+- Adapter 경로 전환
+  - MembershipPersistenceAdapter#search(...)가 QueryDSL 기반 searchUsingQuerydsl(...) 사용
+- 호환성 유지: 기존 @Query 기반 search(…)와 Example 기반 searchByExample(…)는 제거하지 않고 유지
+
+2) 서비스 레이어(Unit) 테스트 추가 및 통과
+- 추가 테스트
+  - membership-service/src/test/java/.../application/service/MembershipCommandServiceTest.java
+  - membership-service/src/test/java/.../application/service/MembershipQueryServiceTest.java
+- 검증 범위: Command/Query 서비스의 매핑, 포트 호출 위임, 파라미터 전달 검증
+- 결과: 모든 테스트 통과(일부 환경에서 Mockito inline self-attach 경고는 있으나 기능 영향 없음)
+
+3) 공통 모듈 빌드 실패 원인 제거
+- 원인: common 모듈에 Spring Boot 플러그인이 적용되어 bootJar 실행 시 mainClass를 찾지 못해 실패
+- 조치: common/build.gradle에 bootJar 비활성화, jar 활성화 설정 추가
+  - tasks.named('bootJar') { enabled = false }
+  - tasks.named('jar') { enabled = true }
+- 결과: ./gradlew clean build 성공
+
+4) 미사용 포트 제거
+- CQRS 분리 이후 사용되지 않는 MembershipPort 인터페이스 내용 제거(컴파일 산출물에서 제외)
+
+5) 기타
+- MembershipRepository에 Example 기반 searchByExample(…) 메서드 추가(간단 검색용)
+- 멀티모듈 빌드/테스트 전반 정상 동작 확인
+
+
 변경내용 요약 (2025-11-18)
 
 이 문서는 최근 작업으로 적용된 변경사항을 간단히 요약합니다. 상세 설정/가이드는 각 문서 링크를 참고하세요.

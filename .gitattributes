@@ -1,0 +1,29 @@
+# Default: normalize text to LF in Git
+* text=auto eol=lf
+
+# Windows batch scripts keep CRLF
+*.bat eol=crlf
+*.cmd eol=crlf
+
+# Shell scripts always LF
+*.sh eol=lf
+
+# Common text types explicitly LF
+*.java eol=lf
+*.kt eol=lf
+*.gradle eol=lf
+*.md eol=lf
+*.xml eol=lf
+*.yml eol=lf
+*.yaml eol=lf
+*.properties eol=lf
+*.txt eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.jar binary
+*.zip binary
+*.pdf binary
