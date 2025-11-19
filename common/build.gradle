@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.7'      // 3.5.x 중 하나 선택
+    id 'org.springframework.boot' version '3.5.7'      // 공통 모듈은 실행 애플리케이션이 아님 → bootJar 비활성화 처리 아래 참고
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
@@ -27,4 +27,13 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+// 공통(common) 모듈은 실행 가능한 Spring Boot 애플리케이션이 아니므로 bootJar 생성이 불필요합니다.
+// mainClass 미설정으로 인한 빌드 실패를 방지하기 위해 bootJar 비활성화, 일반 jar 활성화합니다.
+tasks.named('bootJar') {
+    enabled = false
+}
+tasks.named('jar') {
+    enabled = true
 }
