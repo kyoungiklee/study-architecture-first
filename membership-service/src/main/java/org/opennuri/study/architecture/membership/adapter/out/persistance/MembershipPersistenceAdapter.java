@@ -19,14 +19,14 @@ public class MembershipPersistenceAdapter implements CommandMembershipPort, Quer
 
     @Override
     public Membership crateMembership(Membership membership) {
-        MembershipEntity entity = MembershipEntity.builder()
-                .name(membership.getName())
-                .email(membership.getEmail())
-                .address(membership.getAddress())
-                .isCorp(membership.isCorp())
-                .isValid(membership.isValid())
-                .createdAt(LocalDateTime.now())
-                .build();
+        // MembershipEntity에는 Lombok @Builder가 없으므로, 생성 후 setter로 값 설정
+        MembershipEntity entity = new MembershipEntity();
+        entity.setName(membership.getName());
+        entity.setEmail(membership.getEmail());
+        entity.setAddress(membership.getAddress());
+        entity.setCorp(membership.isCorp());
+        entity.setValid(membership.isValid());
+        entity.setCreatedAt(LocalDateTime.now());
 
         MembershipEntity saved = membershipRepository.save(entity);
 
