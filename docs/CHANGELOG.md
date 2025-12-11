@@ -1,3 +1,28 @@
+변경내용 요약 (2025-12-11)
+
+금일 작업은 멤버십 영속 어댑터 빌드 오류 수정과 아키텍처 온보딩 문서 강화에 초점을 맞췄습니다. 주요 변경은 다음과 같습니다.
+
+1) 빌드 오류 수정: MembershipPersistenceAdapter ↔ MembershipEntity
+- 문제: `MembershipPersistenceAdapter`에서 `MembershipEntity.builder()`를 사용했지만, 엔티티에 빌더가 없어 컴파일 실패
+- 조치:
+  - `MembershipEntity`에 Lombok `@Builder` 추가
+  - 어댑터의 `crateMembership` 구현을 기본 생성자 + setter 방식으로 안전하게 수정
+  - Repository 테스트/검색 유틸에서의 빌더 사용과 호환성 유지
+- 결과: 모듈 빌드 성공 확인
+
+2) 온보딩 문서 강화 (Hexagonal 아키텍처 가이드)
+- 위치: `docs/ONBOARDING-Hexagonal-Architecture.md`
+- 추가/보강 내용:
+  - 도메인 모델 vs 영속성 모델 분리 원칙 정리 및 매핑 규칙
+  - DTO vs Domain Model 역할과 분리 이유, 권장 매핑 흐름, 안티패턴
+  - 읽기/쓰기 서비스 분리(경량 CQRS) 가이드
+  - 컨트롤러 CRUD 매핑 가이드 + OpenAPI(Swagger UI) 접속 경로와 테스트 방법
+  - 테스트 작성 가이드라인 및 커버리지 기준(피라미드, 레이어별 전략, 실행/리포트 예시)
+
+3) 검증
+- `gradlew build` 성공
+
+
 변경내용 요약 (2025-11-19)
 
 이번 릴리스에서는 검색 전략을 QueryDSL로 표준화하고, 서비스 레이어 단위 테스트를 보강했으며, 공통 모듈의 빌드 실패 원인을 제거했습니다. 주요 변경은 다음과 같습니다.
