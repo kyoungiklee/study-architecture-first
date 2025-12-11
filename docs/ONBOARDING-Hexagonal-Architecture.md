@@ -420,7 +420,7 @@ jacocoTestCoverageVerification {
 test.finalizedBy jacocoTestCoverageVerification
 ```
 
-### 8) PR 체크리스트(요약)
+### 8) MR 체크리스트(요약)
 - [ ] 새/변경 유스케이스의 단위 테스트가 존재하고 실패/경계 케이스 포함
 - [ ] 컨트롤러 엔드포인트의 상태코드/검증 오류 테스트 포함(MockMvc)
 - [ ] 저장소/쿼리 로직 변경 시 `@DataJpaTest` 케이스 추가
@@ -680,7 +680,7 @@ Q2. 엔티티와 도메인 모델이 분리된 이유는?
 - A. 영속성 모델(JPA 엔티티)과 도메인 모델(비즈니스 객체)의 변경 주기가 다르고, 외부 기술에 대한 의존을 도메인에서 차단하기 위함입니다.
 
 Q3. `crateMembership` 오탈자를 바꿔도 되나요?
-- A. 가능합니다. 단, Port/Adapter/Service/테스트 전역에서 함께 변경해야 하며 대규모 리팩토링이므로 별도 PR로 진행하세요.
+- A. 가능합니다. 단, Port/Adapter/Service/테스트 전역에서 함께 변경해야 하며 대규모 리팩토링이므로 별도 MR로 진행하세요.
 
 ---
 
