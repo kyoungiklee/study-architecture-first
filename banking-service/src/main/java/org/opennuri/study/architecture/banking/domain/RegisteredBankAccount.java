@@ -14,4 +14,5 @@ public class RegisteredBankAccount {
     private Long memberId;
     private String bankCode;
     private String bankAccountNo;
+    private boolean valid;
 }
