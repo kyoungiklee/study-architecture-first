@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.opennuri.study.architecture.banking.application.port.out.CommandBankAccountPort;
 import org.opennuri.study.architecture.banking.application.port.out.QueryBankAccountHistoryPort;
 import org.opennuri.study.architecture.banking.application.port.out.QueryBankAccountPort;
-import org.opennuri.study.architecture.banking.domain.RegisteredBankAccount;
-import org.opennuri.study.architecture.banking.domain.RegisteredBankAccountHistory;
+import org.opennuri.study.architecture.banking.domain.BankAccount;
+import org.opennuri.study.architecture.banking.domain.BankAccountHistory;
 import org.opennuri.study.archtecture.common.PersistanceAdapter;
 
 import java.time.LocalDateTime;
@@ -24,7 +24,7 @@ public class BankingPersistenceAdapter implements CommandBankAccountPort,
 
     // ---- BankAccount (Command)
     @Override
-    public RegisteredBankAccount create(RegisteredBankAccount account) {
+    public BankAccount create(BankAccount account) {
         BankAccountEntity entity = BankAccountEntity.builder()
                 .memberId(account.getMemberId())
                 .bankCode(account.getBankCode())
@@ -43,7 +43,7 @@ public class BankingPersistenceAdapter implements CommandBankAccountPort,
     }
 
     @Override
-    public RegisteredBankAccount update(RegisteredBankAccount account) {
+    public BankAccount update(BankAccount account) {
         BankAccountEntity entity = bankAccountRepository.findById(account.getId())
                 .orElseThrow(() -> new IllegalArgumentException("BankAccount not found: " + account.getId()));
         entity.setMemberId(account.getMemberId());
@@ -74,18 +74,18 @@ public class BankingPersistenceAdapter implements CommandBankAccountPort,
 
     // ---- BankAccount (Query)
     @Override
-    public Optional<RegisteredBankAccount> findById(Long id) {
+    public Optional<BankAccount> findById(Long id) {
         return bankAccountRepository.findById(id).map(this::toDomain);
     }
 
     @Override
-    public List<RegisteredBankAccount> search(Long memberId, String bankCode, String bankAccountNo, Boolean valid, LocalDateTime createdFrom, LocalDateTime createdTo) {
+    public List<BankAccount> search(Long memberId, String bankCode, String bankAccountNo, Boolean valid, LocalDateTime createdFrom, LocalDateTime createdTo) {
         return bankAccountRepository.search(memberId, bankCode, bankAccountNo, valid, createdFrom, createdTo)
                 .stream().map(this::toDomain).collect(Collectors.toList());
     }
 
-    private RegisteredBankAccount toDomain(BankAccountEntity e) {
-        return RegisteredBankAccount.builder()
+    private BankAccount toDomain(BankAccountEntity e) {
+        return BankAccount.builder()
                 .id(e.getId())
                 .memberId(e.getMemberId())
                 .bankCode(e.getBankCode())
@@ -96,18 +96,18 @@ public class BankingPersistenceAdapter implements CommandBankAccountPort,
 
     // ---- History (Query)
     @Override
-    public Optional<RegisteredBankAccountHistory> findHistoryById(Long id) {
+    public Optional<BankAccountHistory> findHistoryById(Long id) {
         return bankAccountHistoryRepository.findById(id).map(this::toDomain);
     }
 
     @Override
-    public List<RegisteredBankAccountHistory> search(Long bankAccountId, String action, LocalDateTime from, LocalDateTime to) {
+    public List<BankAccountHistory> search(Long bankAccountId, String action, LocalDateTime from, LocalDateTime to) {
         return bankAccountHistoryRepository.search(bankAccountId, action, from, to)
                 .stream().map(this::toDomain).collect(Collectors.toList());
     }
 
-    private RegisteredBankAccountHistory toDomain(BankAccountHistoryEntity e) {
-        return RegisteredBankAccountHistory.builder()
+    private BankAccountHistory toDomain(BankAccountHistoryEntity e) {
+        return BankAccountHistory.builder()
                 .id(e.getId())
                 .registeredBankAccountId(e.getBankAccountId())
                 .action(e.getAction())

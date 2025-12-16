@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestFirmbanking {
+public class Firmbanking {
     private Long id;
     private String fromBankAccount;
     private String toBankAccount;

@@ -1,6 +1,6 @@
 package org.opennuri.study.architecture.banking.application.port.out;
 
-import org.opennuri.study.architecture.banking.domain.RegisteredBankAccountHistory;
+import org.opennuri.study.architecture.banking.domain.BankAccountHistory;
 
 /**
  * Command port for explicitly recording bank account history.
@@ -12,5 +12,5 @@ import org.opennuri.study.architecture.banking.domain.RegisteredBankAccountHisto
  */
 @SuppressWarnings("unused")
 public interface CommandBankAccountHistoryPort {
-    RegisteredBankAccountHistory record(RegisteredBankAccountHistory history);
+    BankAccountHistory record(BankAccountHistory history);
 }

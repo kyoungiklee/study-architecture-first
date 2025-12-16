@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisteredBankAccount {
+public class FirmbankingHistory {
     private Long id;
-    private Long memberId;
-    private String bankCode;
-    private String bankAccountNo;
-    private boolean valid;
+    private Long requestFirmbankingId;
+    private String status;
 }

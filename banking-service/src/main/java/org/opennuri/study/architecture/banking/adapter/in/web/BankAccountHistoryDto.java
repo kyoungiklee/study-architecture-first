@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.opennuri.study.architecture.banking.domain.RegisteredBankAccountHistory;
+import org.opennuri.study.architecture.banking.domain.BankAccountHistory;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +15,7 @@ public class BankAccountHistoryDto {
     private Long bankAccountId;
     private String action;
 
-    public static BankAccountHistoryDto from(RegisteredBankAccountHistory domain) {
+    public static BankAccountHistoryDto from(BankAccountHistory domain) {
         return BankAccountHistoryDto.builder()
                 .id(domain.getId())
                 .bankAccountId(domain.getRegisteredBankAccountId())

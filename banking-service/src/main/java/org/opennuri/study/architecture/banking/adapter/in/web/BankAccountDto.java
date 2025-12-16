@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.opennuri.study.architecture.banking.domain.RegisteredBankAccount;
+import org.opennuri.study.architecture.banking.domain.BankAccount;
 
 @Data
 @NoArgsConstructor
@@ -23,7 +23,7 @@ public class BankAccountDto {
     @NotNull
     private Boolean valid;
 
-    public static BankAccountDto from(RegisteredBankAccount domain) {
+    public static BankAccountDto from(BankAccount domain) {
         return BankAccountDto.builder()
                 .id(domain.getId())
                 .memberId(domain.getMemberId())

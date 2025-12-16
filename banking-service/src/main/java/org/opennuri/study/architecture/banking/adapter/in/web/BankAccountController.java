@@ -6,7 +6,7 @@ import org.opennuri.study.architecture.banking.application.port.in.command.Creat
 import org.opennuri.study.architecture.banking.application.port.in.command.UpdateBankAccountCommand;
 import org.opennuri.study.architecture.banking.application.service.BankAccountCommandService;
 import org.opennuri.study.architecture.banking.application.service.BankAccountQueryService;
-import org.opennuri.study.architecture.banking.domain.RegisteredBankAccount;
+import org.opennuri.study.architecture.banking.domain.BankAccount;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,7 @@ public class BankAccountController {
     // ---- Commands ----
     @PostMapping
     public ResponseEntity<BankAccountDto> create(@Valid @RequestBody BankAccountDto request) {
-        RegisteredBankAccount saved = commandService.create(CreateBankAccountCommand.builder()
+        BankAccount saved = commandService.registerBankAccount(CreateBankAccountCommand.builder()
                 .memberId(request.getMemberId())
                 .bankCode(request.getBankCode())
                 .bankAccountNo(request.getBankAccountNo())
@@ -38,7 +38,7 @@ public class BankAccountController {
     @PutMapping("/{id}")
     public ResponseEntity<BankAccountDto> update(@PathVariable Long id,
                                                  @Valid @RequestBody BankAccountDto request) {
-        RegisteredBankAccount updated = commandService.update(UpdateBankAccountCommand.builder()
+        BankAccount updated = commandService.update(UpdateBankAccountCommand.builder()
                 .id(id)
                 .memberId(request.getMemberId())
                 .bankCode(request.getBankCode())

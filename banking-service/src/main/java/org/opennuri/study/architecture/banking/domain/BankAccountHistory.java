@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestFirmbankingHistory {
+public class BankAccountHistory {
     private Long id;
-    private Long requestFirmbankingId;
-    private String status;
+    private Long registeredBankAccountId;
+    private String action; // REGISTERED, UPDATED, DELETED 등
 }
