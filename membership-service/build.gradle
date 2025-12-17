@@ -59,6 +59,10 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
 test {
     useJUnitPlatform()
     // Windows 등 로컬 환경에서 한글 로그/메시지 깨짐 방지를 위해 UTF-8 고정

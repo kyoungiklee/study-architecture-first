@@ -48,6 +48,15 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+allprojects {
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        doFirst {
+            println "== ${path} encoding=${options.encoding}"
+        }
+    }
+}
+
 test {
     useJUnitPlatform()
 }
