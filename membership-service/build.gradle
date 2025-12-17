@@ -63,7 +63,9 @@ test {
     useJUnitPlatform()
     // Windows 등 로컬 환경에서 한글 로그/메시지 깨짐 방지를 위해 UTF-8 고정
     systemProperty 'file.encoding', 'UTF-8'
-    jvmArgs '-Dfile.encoding=UTF-8', '-Dsun.jnu.encoding=UTF-8'
+    // JVM 기본 인코딩/로케일 강제
+    jvmArgs '-Dfile.encoding=UTF-8', '-Dsun.jnu.encoding=UTF-8', '-Duser.language=ko', '-Duser.country=KR'
+
     testLogging {
         events "passed", "skipped", "failed"
         showStandardStreams = true
