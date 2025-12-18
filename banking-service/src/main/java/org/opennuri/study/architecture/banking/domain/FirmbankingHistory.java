@@ -1,16 +1,18 @@
 package org.opennuri.study.architecture.banking.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+import java.time.LocalDateTime;
+
+/**
+ * FirmbankingHistory 도메인 모델
+ * 펌뱅킹 상태 변경 이력을 나타내는 순수 도메인 객체
+ */
+@Value
 public class FirmbankingHistory {
-    private Long id;
-    private Long requestFirmbankingId;
-    private String status;
+    Long id;
+    Long firmbankingId;
+    Firmbanking.FirmbankingStatus status;
+    String description;
+    LocalDateTime createdAt;
 }

@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:money;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+
+# External service stub properties
+service:
+  membership:
+    stub: true
+  banking:
+    stub: true

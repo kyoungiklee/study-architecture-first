@@ -4,10 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
-compileJava{
-    sourceCompatibility = 21
-    targetCompatibility = 21
-}
+// compileJava 설정 제거 (루트 build.gradle에서 Java 21 및 인코딩 통합 관리)
 
 group = 'org.opennuri.study.architecture.membership'
 version = '1.0-SNAPSHOT'
@@ -59,16 +56,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
 test {
     useJUnitPlatform()
-    // Windows 등 로컬 환경에서 한글 로그/메시지 깨짐 방지를 위해 UTF-8 고정
-    systemProperty 'file.encoding', 'UTF-8'
-    // JVM 기본 인코딩/로케일 강제
-    jvmArgs '-Dfile.encoding=UTF-8', '-Dsun.jnu.encoding=UTF-8', '-Duser.language=ko', '-Duser.country=KR'
 
     testLogging {
         events "passed", "skipped", "failed"

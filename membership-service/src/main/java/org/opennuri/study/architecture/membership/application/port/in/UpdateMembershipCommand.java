@@ -9,7 +9,7 @@ import org.opennuri.study.archtecture.common.SelfValidating;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class UpdateMembershipCommand extends SelfValidating {
+public class UpdateMembershipCommand extends SelfValidating<UpdateMembershipCommand> {
     @NotBlank
     private String membershipId;
 
