@@ -84,6 +84,30 @@ services:
       retries: 5
       start_period: 20s
 
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+    image: study/payment-service:local
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SERVER_PORT=8086
+      - MEMBERSHIP_SERVICE_URL=http://membership-service:8081
+      - MONEY_SERVICE_URL=http://money-service:8083
+    ports:
+      - "8086:8086"
+    depends_on:
+      membership-service:
+        condition: service_healthy
+      money-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8086/actuator/health | grep 'UP' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
 networks:
   default:
     name: study-arch-first
