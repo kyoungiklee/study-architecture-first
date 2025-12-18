@@ -7,6 +7,9 @@ WORKDIR /workspace
 COPY gradlew gradlew.bat settings.gradle build.gradle gradle.properties ./
 COPY gradle ./gradle
 
+# Pre-download Gradle (leverage cache)
+RUN ./gradlew --version --no-daemon
+
 # Copy only required modules to leverage Docker layer cache
 COPY common ./common
 COPY banking-service ./banking-service
