@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * 멤버십 관련 웹 요청을 처리하는 컨트롤러입니다.
+ * 인바운드 포트(UseCase)를 호출하여 멤버십 비즈니스 로직을 실행합니다.
+ */
 @WebAdapter
 @RestController
 @RequestMapping("/memberships")
@@ -35,6 +39,11 @@ public class MembershipController {
     private final SearchMembershipUseCase searchMembershipUseCase;
     private final DeleteMembershipUseCase deleteMembershipUseCase;
 
+    /**
+     * 서비스 상태 확인 엔드포인트
+     *
+     * @return "OK" 문자열
+     */
     @Operation(
             summary = "서비스 상태 확인",
             description = "멤버십 서비스의 정상 작동 여부를 확인합니다.",
@@ -45,6 +54,12 @@ public class MembershipController {
         return ResponseEntity.ok("OK");
     }
 
+    /**
+     * 신규 멤버십을 등록합니다.
+     *
+     * @param request 멤버십 등록 요청 데이터
+     * @return 등록된 멤버십 정보와 201 Created 응답
+     */
     @Operation(
             summary = "멤버십 등록",
             description = "새로운 멤버십을 등록합니다. 이름, 이메일, 주소는 필수 입력 항목입니다."
@@ -83,6 +98,12 @@ public class MembershipController {
         return new ResponseEntity<>(body, headers, HttpStatus.CREATED);
     }
 
+    /**
+     * ID를 기준으로 멤버십 상세 정보를 조회합니다.
+     *
+     * @param id 멤버십 ID
+     * @return 멤버십 상세 정보
+     */
     @Operation(
             summary = "멤버십 단건 조회",
             description = "ID로 특정 멤버십의 상세 정보를 조회합니다."
@@ -109,6 +130,16 @@ public class MembershipController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
+    /**
+     * 조건에 맞는 멤버십 목록을 검색합니다.
+     *
+     * @param name 이름 검색어 (부분 일치)
+     * @param email 이메일 검색어 (부분 일치)
+     * @param address 주소 검색어 (부분 일치)
+     * @param isCorp 법인 여부 필터
+     * @param isValid 유효 상태 필터
+     * @return 검색된 멤버십 목록
+     */
     @Operation(
             summary = "멤버십 목록 조회",
             description = "조건에 맞는 멤버십 목록을 조회합니다. 모든 파라미터는 선택사항이며, 파라미터 없이 요청 시 전체 목록을 반환합니다."
@@ -151,6 +182,13 @@ public class MembershipController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 기존 멤버십 정보를 수정합니다.
+     *
+     * @param id 멤버십 ID
+     * @param request 수정할 데이터
+     * @return 수정된 멤버십 정보
+     */
     @Operation(
             summary = "멤버십 수정",
             description = "기존 멤버십의 정보를 수정합니다. 모든 필드를 포함하여 요청해야 합니다 (PUT 방식)."
@@ -193,6 +231,12 @@ public class MembershipController {
         return ResponseEntity.ok(MembershipResponse.from(updated));
     }
 
+    /**
+     * ID를 기준으로 멤버십을 삭제합니다.
+     *
+     * @param id 멤버십 ID
+     * @return 204 No Content (성공 시)
+     */
     @Operation(
             summary = "멤버십 삭제",
             description = "ID에 해당하는 멤버십을 삭제합니다."

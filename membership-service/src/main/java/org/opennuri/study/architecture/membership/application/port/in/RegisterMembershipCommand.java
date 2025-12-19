@@ -7,24 +7,51 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import org.opennuri.study.archtecture.common.SelfValidating;
 
+/**
+ * 멤버십 등록 요청 데이터를 담는 커맨드 객체입니다.
+ * 입력 데이터의 유효성을 스스로 검증하는 책임을 가집니다.
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class RegisterMembershipCommand extends SelfValidating<RegisterMembershipCommand> {
+    /**
+     * 멤버의 이름
+     */
     @NotBlank
     private String name;
 
+    /**
+     * 멤버의 이메일 주소
+     */
     @NotBlank
     @Email
     private String email;
 
+    /**
+     * 멤버의 주소
+     */
     @NotBlank
     private String address;
 
+    /**
+     * 법인 여부
+     */
     private boolean isCorp;
 
-    // 모든 정보가 유효한지 여부 (Bean Validation 통과 시 true)
+    /**
+     * 데이터의 유효성 상태
+     */
     private boolean isValid;
 
+    /**
+     * RegisterMembershipCommand 생성자
+     * 생성 시점에 Bean Validation을 이용해 데이터의 유효성을 검증합니다.
+     *
+     * @param name 이름
+     * @param email 이메일
+     * @param address 주소
+     * @param isCorp 법인 여부
+     */
     @Builder
     public RegisterMembershipCommand(String name, String email, String address, boolean isCorp) {
         this.name = name;
