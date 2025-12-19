@@ -34,26 +34,21 @@ public interface RequestRemittanceUseCase {
         @NotNull
         private RemittanceType toType;
         
-        private String toMembershipId;
-        
-        private String toBankCode;
-        private String toBankAccountNumber;
+        @NotBlank
+        private String toTarget;
         
         @NotNull
         @Positive
         private Long amount;
-        
-        @NotBlank
-        private String idempotencyKey;
 
-        public RemittanceCommand(String fromMembershipId, RemittanceType toType, String toMembershipId, String toBankCode, String toBankAccountNumber, Long amount, String idempotencyKey) {
+        private String reason;
+        
+        public RemittanceCommand(String fromMembershipId, RemittanceType toType, String toTarget, Long amount, String reason) {
             this.fromMembershipId = fromMembershipId;
             this.toType = toType;
-            this.toMembershipId = toMembershipId;
-            this.toBankCode = toBankCode;
-            this.toBankAccountNumber = toBankAccountNumber;
+            this.toTarget = toTarget;
             this.amount = amount;
-            this.idempotencyKey = idempotencyKey;
+            this.reason = reason;
             this.validateSelf();
         }
     }

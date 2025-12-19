@@ -8,9 +8,9 @@ import org.opennuri.study.architecture.remittance.adapter.in.web.dto.RemitReques
 import org.opennuri.study.architecture.remittance.adapter.in.web.dto.RemitResponse;
 import org.opennuri.study.architecture.remittance.application.port.in.RequestRemittanceUseCase;
 import org.opennuri.study.archtecture.common.WebAdapter;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.opennuri.study.architecture.remittance.application.port.out.RemittanceRepositoryPort;
+import org.opennuri.study.architecture.remittance.domain.model.Remittance;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 송금 컨트롤러
@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 @WebAdapter
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class RemittanceController {
 
     private final RequestRemittanceUseCase requestRemittanceUseCase;
+    private final RemittanceRepositoryPort remittanceRepositoryPort;
 
     /**
      * 송금을 요청합니다.
@@ -33,18 +35,22 @@ public class RemittanceController {
      */
     @Operation(summary = "송금 요청", description = "송금 요청을 처리합니다.")
     @ApiResponse(responseCode = "200", description = "송금 요청 성공")
-    @PostMapping("/remittance")
+    @PostMapping("/remittances")
     public RemitResponse requestRemittance(@RequestBody RemitRequest request) {
         RequestRemittanceUseCase.RemittanceCommand command = RequestRemittanceUseCase.RemittanceCommand.builder()
                 .fromMembershipId(request.getFromMembershipId())
                 .toType(request.getToType())
-                .toMembershipId(request.getToMembershipId())
-                .toBankCode(request.getToBankCode())
-                .toBankAccountNumber(request.getToBankAccountNumber())
+                .toTarget(request.getToTarget())
                 .amount(request.getAmount())
-                .idempotencyKey(request.getIdempotencyKey())
+                .reason(request.getReason())
                 .build();
 
         return requestRemittanceUseCase.requestRemittance(command);
+    }
+
+    @Operation(summary = "송금 상태 조회", description = "송금 상태를 조회합니다.")
+    @GetMapping("/remittances/{remittanceId}")
+    public Remittance getRemittance(@PathVariable String remittanceId) {
+        return remittanceRepositoryPort.findByRemittanceId(remittanceId);
     }
 }

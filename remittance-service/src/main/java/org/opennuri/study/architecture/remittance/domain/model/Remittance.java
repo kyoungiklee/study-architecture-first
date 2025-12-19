@@ -5,38 +5,47 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
 
-@Value
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Remittance {
-    String remittanceId;
-    String fromMembershipId;
-    RemittanceType toType;
-    String toMembershipId;
-    String toBankCode;
-    String toBankAccountNumber;
-    Long amount;
-    RemittanceStatus status;
-    String idempotencyKey;
+    private final String remittanceId;
+    private final String fromMembershipId;
+    private final RemittanceType toType;
+    private final String toTarget; // toMembershipId or toBankAccountNumber
+    private final Long amount;
+    private final String reason;
+    private RemittanceStatus status;
+    private String failureCode;
+    private final Long createdAt;
+    private Long updatedAt;
 
     public static Remittance createRemittance(
+            String remittanceId,
             String fromMembershipId,
             RemittanceType toType,
-            String toMembershipId,
-            String toBankCode,
-            String toBankAccountNumber,
+            String toTarget,
             Long amount,
-            String idempotencyKey
+            String reason,
+            RemittanceStatus status,
+            Long createdAt
     ) {
         return new Remittance(
-                null,
+                remittanceId,
                 fromMembershipId,
                 toType,
-                toMembershipId,
-                toBankCode,
-                toBankAccountNumber,
+                toTarget,
                 amount,
-                RemittanceStatus.REQUESTED,
-                idempotencyKey
+                reason,
+                status,
+                null,
+                createdAt,
+                createdAt
         );
+    }
+
+    public void updateStatus(RemittanceStatus status, String failureCode) {
+        this.status = status;
+        this.failureCode = failureCode;
+        this.updatedAt = System.currentTimeMillis();
     }
 }
