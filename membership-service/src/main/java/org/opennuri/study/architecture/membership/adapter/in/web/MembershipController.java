@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 @WebAdapter
 @RestController
+@RequestMapping("/memberships")
 @RequiredArgsConstructor
 public class MembershipController {
 
@@ -26,13 +27,13 @@ public class MembershipController {
     private final SearchMembershipUseCase searchMembershipUseCase;
     private final DeleteMembershipUseCase deleteMembershipUseCase;
 
-    @GetMapping("/membership/test")
+    @GetMapping("/test")
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("OK");
     }
 
     // Create
-    @PostMapping("/membership")
+    @PostMapping
     public ResponseEntity<MembershipResponse> create(@Valid @RequestBody RegisterMembershipRequest request) {
         RegisterMembershipCommand command = RegisterMembershipCommand.builder()
                 .name(request.getName())
@@ -45,12 +46,12 @@ public class MembershipController {
         MembershipResponse body = MembershipResponse.from(created);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/membership/" + created.getMembershipId()));
+        headers.setLocation(URI.create("/memberships/" + created.getMembershipId()));
         return new ResponseEntity<>(body, headers, HttpStatus.CREATED);
     }
 
     // Read by id
-    @GetMapping("/membership/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<MembershipResponse> getById(@PathVariable("id") String id) {
         Optional<Membership> optional = getMembershipByIdUseCase.getMembershipById(id);
         return optional
@@ -60,7 +61,7 @@ public class MembershipController {
     }
 
     // Search (query)
-    @GetMapping("/membership")
+    @GetMapping
     public ResponseEntity<List<MembershipResponse>> search(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "email", required = false) String email,
@@ -83,7 +84,7 @@ public class MembershipController {
     }
 
     // Update
-    @PutMapping("/membership/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<MembershipResponse> update(@PathVariable("id") String id,
                                                      @Valid @RequestBody UpdateMembershipRequest request) {
         try {
@@ -102,7 +103,7 @@ public class MembershipController {
     }
 
     // Delete
-    @DeleteMapping("/membership/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         boolean deleted = deleteMembershipUseCase.deleteMembership(id);
         if (!deleted) {

@@ -21,7 +21,7 @@ public class MembershipServiceClientAdapter implements LoadMembershipPort {
     public MembershipStatus loadMembershipStatus(String membershipId) {
         // 실제 API 호출 로직 (MVP 단계에서는 stub 또는 실제 호출)
         // return webClient.get()
-        //         .uri("/membership/{id}", membershipId)
+        //         .uri("/memberships/{id}", membershipId)
         //         .retrieve()
         //         .bodyToMono(MembershipStatusResponse.class)
         //         .map(res -> new MembershipStatus(res.getMembershipId(), res.isValid()))
