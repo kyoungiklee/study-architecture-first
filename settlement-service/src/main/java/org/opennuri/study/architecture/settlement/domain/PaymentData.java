@@ -1,16 +1,16 @@
 package org.opennuri.study.architecture.settlement.domain;
 
-import java.math.BigDecimal;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Value
 @Builder
-public class SettlementItem {
+public class PaymentData {
+    String paymentId;
     String merchantId;
     BigDecimal amount;
-    BigDecimal fee;
-    BigDecimal netAmount;
-    List<String> paymentIds;
+    LocalDateTime paymentDateTime;
 }
