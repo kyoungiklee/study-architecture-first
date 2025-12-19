@@ -30,6 +30,11 @@ public class MoneyChangingService implements RequestMoneyChangingUseCase, GetMem
     private final SaveMoneyChangingHistoryPort saveMoneyChangingHistoryPort;
     private final LoadMoneyChangingHistoryPort loadMoneyChangingHistoryPort;
 
+    /**
+     * 특정 멤버십의 머니를 충전합니다.
+     *
+     * @param request 머니 충전 요청 정보 (대상 멤버십 ID, 금액)
+     */
     @Override
     public void increaseMoney(IncreaseMoneyRequest request) {
         // 1. 도메인 모델 로드
@@ -52,6 +57,11 @@ public class MoneyChangingService implements RequestMoneyChangingUseCase, GetMem
         saveMoneyChangingHistoryPort.saveMoneyChangingHistory(history);
     }
 
+    /**
+     * 특정 멤버십의 머니를 차감합니다.
+     *
+     * @param request 머니 차감 요청 정보 (대상 멤버십 ID, 금액)
+     */
     @Override
     public void decreaseMoney(DecreaseMoneyRequest request) {
         // 1. 도메인 모델 로드
@@ -74,12 +84,24 @@ public class MoneyChangingService implements RequestMoneyChangingUseCase, GetMem
         saveMoneyChangingHistoryPort.saveMoneyChangingHistory(history);
     }
 
+    /**
+     * 특정 멤버십의 머니 잔액을 조회합니다.
+     *
+     * @param membershipId 멤버십 ID
+     * @return 머니 잔액
+     */
     @Override
     public Long getMemberMoney(String membershipId) {
         Money money = loadMoneyPort.loadMoney(membershipId);
         return money.getBalance();
     }
 
+    /**
+     * 특정 멤버십의 머니 변동 이력을 조회합니다.
+     *
+     * @param membershipId 멤버십 ID
+     * @return 머니 변동 이력 목록
+     */
     @Override
     public List<MoneyChangingHistory> getHistory(String membershipId) {
         return loadMoneyChangingHistoryPort.loadMoneyChangingHistory(membershipId);
