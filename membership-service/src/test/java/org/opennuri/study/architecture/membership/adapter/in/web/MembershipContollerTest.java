@@ -48,7 +48,9 @@ class MembershipContollerTest {
                 deleteMembershipUseCase
         );
 
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
     }
 
     private Membership sample(String id) {
