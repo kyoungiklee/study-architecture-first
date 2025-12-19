@@ -6,7 +6,22 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,openapi
+
+# SpringDoc OpenAPI 설정
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    default-models-expand-depth: 1
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
 
 server:
   port: 0
