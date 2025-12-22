@@ -75,3 +75,5 @@ printf "표준출력 테스트: 한글\n"
 ## 요약
 - 원인: Git Bash(UTF-8)와 JVM 기본 인코딩(CP949)이 불일치
 - 해결: JVM 인코딩을 UTF-8로 강제(JAVA_TOOL_OPTIONS/GRADLE_OPTS/gradle.properties), Git Bash 로케일을 UTF-8로 유지, 실행 환경(IDE/콘솔)별로 UTF-8 일관성 확보
+
+- 윈도우즈 OS에서는 제어판 > 국가 또는 지역 > 관리자옵션 > 시스템 로캘 변경 체크

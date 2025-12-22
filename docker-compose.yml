@@ -1,0 +1,155 @@
+services:
+  membership-service:
+    build:
+      context: .
+      dockerfile: membership-service/Dockerfile
+    image: study/membership-service:local
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8081/actuator/health | grep 'UP' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  banking-service:
+    build:
+      context: .
+      dockerfile: banking-service/Dockerfile
+    image: study/banking-service:local
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SERVER_PORT=8082
+      # 필요 시 membership-service 주소를 환경변수로 제공 (추후 실제 연동 시 사용)
+      - MEMBERSHIP_SERVICE_URL=http://membership-service:8081
+    ports:
+      - "8082:8082"
+    depends_on:
+      membership-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8082/actuator/health | grep 'UP' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  money-service:
+    build:
+      context: .
+      dockerfile: money-service/Dockerfile
+    image: study/money-service:local
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SERVER_PORT=8083
+    ports:
+      - "8083:8083"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8083/actuator/health | grep 'UP' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  remittance-service:
+    build:
+      context: .
+      dockerfile: remittance-service/Dockerfile
+    image: study/remittance-service:local
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SERVER_PORT=8084
+      - MEMBERSHIP_SERVICE_URL=http://membership-service:8081
+      - MONEY_SERVICE_URL=http://money-service:8083
+      - BANKING_SERVICE_URL=http://banking-service:8082
+    ports:
+      - "8084:8084"
+    depends_on:
+      membership-service:
+        condition: service_healthy
+      money-service:
+        condition: service_healthy
+      banking-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8084/actuator/health | grep 'UP' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+    image: study/payment-service:local
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SERVER_PORT=8086
+      - MEMBERSHIP_SERVICE_URL=http://membership-service:8081
+      - MONEY_SERVICE_URL=http://money-service:8083
+    ports:
+      - "8085:8085"
+    depends_on:
+      membership-service:
+        condition: service_healthy
+      money-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8086/actuator/health | grep 'UP' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  settlement-service:
+    build:
+      context: .
+      dockerfile: settlement-service/Dockerfile
+    image: study/settlement-service:local
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SERVER_PORT=8087
+    ports:
+      - "8086:8086"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8087/actuator/health | grep 'UP' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  query-service:
+    build:
+      context: .
+      dockerfile: query-service/Dockerfile
+    image: study/query-service:local
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SERVER_PORT=8088
+      - MEMBERSHIP_SERVICE_URL=http://membership-service:8081
+      - BANKING_SERVICE_URL=http://banking-service:8082
+      - MONEY_SERVICE_URL=http://money-service:8083
+    ports:
+      - "8087:8087"
+    depends_on:
+      membership-service:
+        condition: service_healthy
+      banking-service:
+        condition: service_healthy
+      money-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8088/actuator/health | grep 'UP' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  default:
+    name: study-arch-first
