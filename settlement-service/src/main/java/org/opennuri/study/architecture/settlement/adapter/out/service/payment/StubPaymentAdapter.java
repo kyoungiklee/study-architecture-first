@@ -6,9 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.opennuri.study.architecture.settlement.domain.PaymentData;
-import org.opennuri.study.architecture.settlement.domain.SettlementItem;
 import org.opennuri.study.architecture.settlement.port.out.LoadPaymentDataPort;
-import org.opennuri.study.architecture.settlement.port.out.LoadSettlementTargetsPort;
 import org.opennuri.study.architecture.settlement.port.out.UpdatePaymentStatusPort;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -22,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Profile("local")
 @Slf4j
-public class StubPaymentAdapter implements LoadSettlementTargetsPort, UpdatePaymentStatusPort, LoadPaymentDataPort {
+public class StubPaymentAdapter implements UpdatePaymentStatusPort, LoadPaymentDataPort {
 
     private final Map<String, String> statusStore = new ConcurrentHashMap<>();
 
@@ -44,8 +42,4 @@ public class StubPaymentAdapter implements LoadSettlementTargetsPort, UpdatePaym
         log.info("[StubPaymentAdapter] paymentId={} marked as SETTLED", paymentId);
     }
 
-    @Override
-    public List<SettlementItem> loadTargets() {
-        return List.of();
-    }
 }
