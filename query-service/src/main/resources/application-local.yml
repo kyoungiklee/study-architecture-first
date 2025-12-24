@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+# Feign Client Timeouts for Local Stubbing
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000

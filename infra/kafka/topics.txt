@@ -1,0 +1,47 @@
+# ============================================================
+# Nexus Pay Topics - template v1.1
+# naming: {service}.{event}.v1 / {service}.retry.v1 / {service}.dlq.v1
+# optional: {service}.{consumer}.retry.v1 / {service}.{consumer}.dlq.v1
+# ============================================================
+
+# 1) membership-service (3 events)
+membership.created.v1
+membership.status-changed.v1
+membership.verified.v1
+membership.retry.v1
+membership.dlq.v1
+
+# 2) money-service (3 events)
+money.balance-changed.v1
+money.reserved.v1
+money.released.v1
+money.retry.v1
+money.dlq.v1
+
+# 3) banking-service (3 events)
+banking.account-linked.v1
+banking.transfer-requested.v1
+banking.transfer-completed.v1
+banking.retry.v1
+banking.dlq.v1
+
+# 4) remittance-service (3 events)
+remittance.requested.v1
+remittance.completed.v1
+remittance.failed.v1
+remittance.retry.v1
+remittance.dlq.v1
+
+# 5) payment-service (3 events)
+payment.requested.v1
+payment.approved.v1
+payment.canceled.v1
+payment.retry.v1
+payment.dlq.v1
+
+# 6) settlement-service (3 events)
+settlement.started.v1
+settlement.completed.v1
+settlement.failed.v1
+settlement.retry.v1
+settlement.dlq.v1

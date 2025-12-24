@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: membership-service
+
+# SpringDoc OpenAPI 설정
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs              # OpenAPI JSON 엔드포인트
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html       # Swagger UI 경로
+    tags-sorter: alpha           # 태그 알파벳 정렬
+    operations-sorter: alpha     # 오퍼레이션 알파벳 정렬
+    display-request-duration: true
+    display-operation-id: false
+    default-models-expand-depth: 1
+    default-model-expand-depth: 1
+  show-actuator: false           # Actuator 엔드포인트 제외
+  override-with-generic-response: false
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,openapi  # health와 openapi 엔드포인트 노출
+
+server:
+  port: 0

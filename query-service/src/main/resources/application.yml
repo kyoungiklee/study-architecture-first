@@ -1,0 +1,28 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: query-service
+  profiles:
+    active: local
+  datasource:
+    url: jdbc:h2:mem:querydb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+spring.cloud.compatibility-verifier.enabled: false

@@ -48,7 +48,9 @@ class MembershipContollerTest {
                 deleteMembershipUseCase
         );
 
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
     }
 
     private Membership sample(String id) {
@@ -63,7 +65,7 @@ class MembershipContollerTest {
     }
 
     @Test
-    @DisplayName("POST /membership - 생성 성공 시 201과 Location, Body 반환")
+    @DisplayName("POST /memberships - 생성 성공 시 201과 Location, Body 반환")
     void create_success() throws Exception {
         Membership created = sample("1");
         Mockito.when(registerMembershipUseCase.registerMembership(any(RegisterMembershipCommand.class)))
@@ -71,11 +73,11 @@ class MembershipContollerTest {
 
         RegisterMembershipRequest req = new RegisterMembershipRequest("홍길동", "hong@example.com", "서울시 어딘가", false);
 
-        mockMvc.perform(post("/membership")
+        mockMvc.perform(post("/memberships")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/membership/1"))
+                .andExpect(header().string("Location", "/memberships/1"))
                 .andExpect(jsonPath("$.membershipId").value("1"))
                 .andExpect(jsonPath("$.name").value("홍길동"))
                 .andExpect(jsonPath("$.email").value("hong@example.com"))
@@ -85,34 +87,34 @@ class MembershipContollerTest {
     }
 
     @Test
-    @DisplayName("GET /membership/{id} - 존재하면 200과 Body 반환")
+    @DisplayName("GET /memberships/{id} - 존재하면 200과 Body 반환")
     void getById_found() throws Exception {
         Mockito.when(getMembershipByIdUseCase.getMembershipById("1"))
                 .thenReturn(Optional.of(sample("1")));
 
-        mockMvc.perform(get("/membership/1"))
+        mockMvc.perform(get("/memberships/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.membershipId").value("1"));
     }
 
     @Test
-    @DisplayName("GET /membership/{id} - 없으면 404")
+    @DisplayName("GET /memberships/{id} - 없으면 404")
     void getById_notFound() throws Exception {
         Mockito.when(getMembershipByIdUseCase.getMembershipById("999"))
                 .thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/membership/999"))
+        mockMvc.perform(get("/memberships/999"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("GET /membership - 검색은 200과 리스트 반환")
+    @DisplayName("GET /memberships - 검색은 200과 리스트 반환")
     void search_returnsList() throws Exception {
         List<Membership> list = Arrays.asList(sample("1"), sample("2"));
         Mockito.when(searchMembershipUseCase.searchMemberships(any(SearchMembershipQuery.class)))
                 .thenReturn(list);
 
-        mockMvc.perform(get("/membership")
+        mockMvc.perform(get("/memberships")
                         .param("name", "홍")
                         .param("isCorp", "false"))
                 .andExpect(status().isOk())
@@ -122,7 +124,7 @@ class MembershipContollerTest {
     }
 
     @Test
-    @DisplayName("PUT /membership/{id} - 성공 시 200")
+    @DisplayName("PUT /memberships/{id} - 성공 시 200")
     void update_success() throws Exception {
         Membership updated = sample("1");
         Mockito.when(updateMembershipUseCase.updateMembership(any(UpdateMembershipCommand.class)))
@@ -130,7 +132,7 @@ class MembershipContollerTest {
 
         UpdateMembershipRequest req = new UpdateMembershipRequest("홍길동", "hong@example.com", "서울시 어딘가", false);
 
-        mockMvc.perform(put("/membership/1")
+        mockMvc.perform(put("/memberships/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
@@ -138,43 +140,43 @@ class MembershipContollerTest {
     }
 
     @Test
-    @DisplayName("PUT /membership/{id} - 대상 없으면 404")
+    @DisplayName("PUT /memberships/{id} - 대상 없으면 404")
     void update_notFound() throws Exception {
         Mockito.when(updateMembershipUseCase.updateMembership(any(UpdateMembershipCommand.class)))
                 .thenThrow(new IllegalArgumentException("not found"));
 
         UpdateMembershipRequest req = new UpdateMembershipRequest("홍길동", "hong@example.com", "서울시 어딘가", false);
 
-        mockMvc.perform(put("/membership/999")
+        mockMvc.perform(put("/memberships/999")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("DELETE /membership/{id} - 성공 시 204")
+    @DisplayName("DELETE /memberships/{id} - 성공 시 204")
     void delete_success() throws Exception {
         Mockito.when(deleteMembershipUseCase.deleteMembership(eq("1")))
                 .thenReturn(true);
 
-        mockMvc.perform(delete("/membership/1"))
+        mockMvc.perform(delete("/memberships/1"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    @DisplayName("DELETE /membership/{id} - 없으면 404")
+    @DisplayName("DELETE /memberships/{id} - 없으면 404")
     void delete_notFound() throws Exception {
         Mockito.when(deleteMembershipUseCase.deleteMembership(eq("999")))
                 .thenReturn(false);
 
-        mockMvc.perform(delete("/membership/999"))
+        mockMvc.perform(delete("/memberships/999"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("GET /membership/test - 200 OK와 본문 OK")
+    @DisplayName("GET /memberships/test - 200 OK와 본문 OK")
     void testEndpoint() throws Exception {
-        mockMvc.perform(get("/membership/test"))
+        mockMvc.perform(get("/memberships/test"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("OK"));
     }
