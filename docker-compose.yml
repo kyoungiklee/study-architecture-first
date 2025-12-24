@@ -1,16 +1,45 @@
 services:
+  mysql:
+    image: mysql:8.4
+    container_name: nexus-mysql
+    command:
+    - --lower_case_table_names=1
+    - --character-set-server=utf8mb4
+    - --collation-server=utf8mb4_0900_ai_ci
+    - --sql_mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    environment:
+      TZ: ${TZ:-Asia/Seoul}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_BOOTSTRAP_DB:-bootstrap}
+    ports:
+      - "${MYSQL_EXPOSE_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./infra/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    # Note: uses the default compose network defined at the bottom
+    # First-time init scripts in ./infra/mysql/init run only when the volume is brand new.
+    # To re-initialize schemas, remove the named volume 'mysql_data'.
+    
   membership-service:
     build:
       context: .
       dockerfile: membership-service/Dockerfile
     image: study/membership-service:local
     environment:
-      SPRING_PROFILES_ACTIVE: local
-      SERVER_PORT: 8081
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
+      SERVER_PORT: ${MEMBERSHIP_PORT:-8081}
     ports:
-      - "8081:8081"
+      - "${MEMBERSHIP_PORT:-8081}:${MEMBERSHIP_PORT:-8081}"
+    depends_on:
+      mysql:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8081/actuator/health | grep 'UP' || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${MEMBERSHIP_PORT:-8081}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,17 +51,18 @@ services:
       dockerfile: banking-service/Dockerfile
     image: study/banking-service:local
     environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - SERVER_PORT=8082
-      # 필요 시 membership-service 주소를 환경변수로 제공 (추후 실제 연동 시 사용)
-      - MEMBERSHIP_SERVICE_URL=http://membership-service:8081
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-local}
+      - SERVER_PORT=${BANKING_PORT:-8082}
+      - MEMBERSHIP_SERVICE_URL=${MEMBERSHIP_SERVICE_URL:-http://membership-service:8081}
     ports:
-      - "8082:8082"
+      - "${BANKING_PORT:-8082}:${BANKING_PORT:-8082}"
     depends_on:
+      mysql:
+        condition: service_healthy
       membership-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8082/actuator/health | grep 'UP' || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${BANKING_PORT:-8082}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -44,12 +74,15 @@ services:
       dockerfile: money-service/Dockerfile
     image: study/money-service:local
     environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - SERVER_PORT=8083
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-local}
+      - SERVER_PORT=${MONEY_PORT:-8083}
     ports:
-      - "8083:8083"
+      - "${MONEY_PORT:-8083}:${MONEY_PORT:-8083}"
+    depends_on:
+      mysql:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8083/actuator/health | grep 'UP' || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${MONEY_PORT:-8083}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -61,14 +94,16 @@ services:
       dockerfile: remittance-service/Dockerfile
     image: study/remittance-service:local
     environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - SERVER_PORT=8084
-      - MEMBERSHIP_SERVICE_URL=http://membership-service:8081
-      - MONEY_SERVICE_URL=http://money-service:8083
-      - BANKING_SERVICE_URL=http://banking-service:8082
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-local}
+      - SERVER_PORT=${REMITTANCE_PORT:-8084}
+      - MEMBERSHIP_SERVICE_URL=${MEMBERSHIP_SERVICE_URL:-http://membership-service:8081}
+      - MONEY_SERVICE_URL=${MONEY_SERVICE_URL:-http://money-service:8083}
+      - BANKING_SERVICE_URL=${BANKING_SERVICE_URL:-http://banking-service:8082}
     ports:
-      - "8084:8084"
+      - "${REMITTANCE_PORT:-8084}:${REMITTANCE_PORT:-8084}"
     depends_on:
+      mysql:
+        condition: service_healthy
       membership-service:
         condition: service_healthy
       money-service:
@@ -76,7 +111,7 @@ services:
       banking-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8084/actuator/health | grep 'UP' || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${REMITTANCE_PORT:-8084}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -88,19 +123,21 @@ services:
       dockerfile: payment-service/Dockerfile
     image: study/payment-service:local
     environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - SERVER_PORT=8086
-      - MEMBERSHIP_SERVICE_URL=http://membership-service:8081
-      - MONEY_SERVICE_URL=http://money-service:8083
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-local}
+      - SERVER_PORT=${PAYMENT_PORT:-8085}
+      - MEMBERSHIP_SERVICE_URL=${MEMBERSHIP_SERVICE_URL:-http://membership-service:8081}
+      - MONEY_SERVICE_URL=${MONEY_SERVICE_URL:-http://money-service:8083}
     ports:
-      - "8085:8085"
+      - "${PAYMENT_PORT:-8085}:${PAYMENT_PORT:-8085}"
     depends_on:
+      mysql:
+        condition: service_healthy
       membership-service:
         condition: service_healthy
       money-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8086/actuator/health | grep 'UP' || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${PAYMENT_PORT:-8085}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -112,12 +149,15 @@ services:
       dockerfile: settlement-service/Dockerfile
     image: study/settlement-service:local
     environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - SERVER_PORT=8087
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-local}
+      - SERVER_PORT=${SETTLEMENT_PORT:-8086}
     ports:
-      - "8086:8086"
+      - "${SETTLEMENT_PORT:-8086}:${SETTLEMENT_PORT:-8086}"
+    depends_on:
+      mysql:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8087/actuator/health | grep 'UP' || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${SETTLEMENT_PORT:-8086}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -129,14 +169,16 @@ services:
       dockerfile: query-service/Dockerfile
     image: study/query-service:local
     environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - SERVER_PORT=8088
-      - MEMBERSHIP_SERVICE_URL=http://membership-service:8081
-      - BANKING_SERVICE_URL=http://banking-service:8082
-      - MONEY_SERVICE_URL=http://money-service:8083
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-local}
+      - SERVER_PORT=${QUERY_PORT:-8087}
+      - MEMBERSHIP_SERVICE_URL=${MEMBERSHIP_SERVICE_URL:-http://membership-service:8081}
+      - BANKING_SERVICE_URL=${BANKING_SERVICE_URL:-http://banking-service:8082}
+      - MONEY_SERVICE_URL=${MONEY_SERVICE_URL:-http://money-service:8083}
     ports:
-      - "8087:8087"
+      - "${QUERY_PORT:-8087}:${QUERY_PORT:-8087}"
     depends_on:
+      mysql:
+        condition: service_healthy
       membership-service:
         condition: service_healthy
       banking-service:
@@ -144,11 +186,14 @@ services:
       money-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8088/actuator/health | grep 'UP' || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${QUERY_PORT:-8087}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
+
+volumes:
+  mysql_data:
 
 networks:
   default:
