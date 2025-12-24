@@ -38,6 +38,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      topic-init:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:${MEMBERSHIP_PORT:-8081}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
@@ -59,6 +63,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      topic-init:
+        condition: service_completed_successfully
       membership-service:
         condition: service_healthy
     healthcheck:
@@ -81,6 +89,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      topic-init:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:${MONEY_PORT:-8083}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
@@ -104,6 +116,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      topic-init:
+        condition: service_completed_successfully
       membership-service:
         condition: service_healthy
       money-service:
@@ -132,6 +148,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      topic-init:
+        condition: service_completed_successfully
       membership-service:
         condition: service_healthy
       money-service:
@@ -156,6 +176,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      topic-init:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:${SETTLEMENT_PORT:-8086}/actuator/health | grep 'UP' || exit 1"]
       interval: 10s
@@ -179,6 +203,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      topic-init:
+        condition: service_completed_successfully
       membership-service:
         condition: service_healthy
       banking-service:
@@ -192,8 +220,85 @@ services:
       retries: 5
       start_period: 20s
 
+  kafka:
+    image: apache/kafka:4.1.1
+    container_name: nexus-kafka
+    ports:
+      # 외부(호스트) 접속: localhost:19092
+      - "${KAFKA_EXTERNAL_PORT:-19092}:19092"
+    environment:
+      TZ: ${TZ:-Asia/Seoul}
+
+      # -----------------------------
+      # Listeners
+      #  - DOCKER: 컨테이너/Compose 네트워크 내부용 (kafka:9092)
+      #  - HOST  : 호스트(로컬 PC)용 (localhost:19092)
+      #  - CONTROLLER: KRaft controller 통신용 (9093)
+      # -----------------------------
+      KAFKA_LISTENERS: "CONTROLLER://0.0.0.0:9093,HOST://0.0.0.0:19092,DOCKER://0.0.0.0:9092"
+      KAFKA_ADVERTISED_LISTENERS: "HOST://${KAFKA_EXTERNAL_HOST:-localhost}:${KAFKA_EXTERNAL_PORT:-19092},DOCKER://kafka:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT"
+
+      # -----------------------------
+      # KRaft (single node, combined mode)
+      # -----------------------------
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+
+      # broker-to-broker (단일 노드여도 지정 권장)
+      KAFKA_INTER_BROKER_LISTENER_NAME: "DOCKER"
+
+      # -----------------------------
+      # Single node 필수에 가까운 값들
+      # -----------------------------
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+
+    healthcheck:
+      # Docker 공식 가이드에서 cluster-id 확인에 사용하는 스크립트를 그대로 활용
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server kafka:9092 >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: nexus-kafka-ui
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_CLUSTERS_0_NAME: ${KAFKA_UI_CLUSTER_NAME:-nexus-dev}
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
+      DYNAMIC_CONFIG_ENABLED: "true"
+    ports:
+      - "${KAFKA_UI_PORT:-18080}:8080"
+
+  topic-init:
+    image: apache/kafka:4.1.1
+    container_name: nexus-topic-init
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
+      KAFKA_DEFAULT_PARTITIONS: ${KAFKA_DEFAULT_PARTITIONS:-3}
+      KAFKA_REPLICATION_FACTOR: ${KAFKA_REPLICATION_FACTOR:-1}
+      TOPICS_FILE: /etc/kafka/topics.txt
+    volumes:
+      - ./infra/kafka/topics.txt:/etc/kafka/topics.txt:ro
+      - ./infra/kafka/topic-init.sh:/usr/local/bin/topic-init.sh:ro
+    entrypoint: ["/bin/bash", "-lc"]
+    command: ["/usr/local/bin/topic-init.sh"]
+    restart: "no"
+
 volumes:
   mysql_data:
+  kafka_data:
 
 networks:
   default:
